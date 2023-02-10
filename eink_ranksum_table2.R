@@ -284,11 +284,24 @@ sd(exp$q12e, na.rm = T)
 
 wilcox.test(ctl$q12e,exp$q12e)
 
+#likely to reccomend
+mean(ctl$q13e, na.rm = T)
+mean(exp$q13e, na.rm = T)
+
+table(ctl$q13e)
+table(exp$q13e)
+
+hist(ctl$q13e)
+hist(exp$q13e)
+
+wilcox.test(ctl$q13e,exp$q13e)
+t.test(ctl$q13e,exp$q13e)
+
 graphDataControl <- graphDataControl %>% rename("Score" = "Var1")
 graphDataExperimental <- graphDataExperimental %>% rename("Score" = "Var1")
-#p <- ggplot(data = subset(graphDataControl, Score == 3), aes(x = Q, y = Freq)) + geom_col(aes(fill = Score), width = 0.7) +scale_fill_brewer(palette="Greys") +coord_flip()
 
-#p
+graphDataControl <- graphDataControl %>% mutate(Arm = "c")
+graphDataExperimental <- graphDataExperimental %>% mutate(Arm = "i")
 
 graphDataControl$Score = factor(graphDataControl$Score, levels = c(0,1,2,3))
 
@@ -319,7 +332,7 @@ plot2 <- ggplot(graphDataExperimental, aes(x = Q,y=Freq)) +
            aes(y = -Freq, fill = factor(Score))) +
   coord_flip() + scale_fill_brewer(palette="Greys", name="Response", breaks=c(0,1,2,3), labels=c("No", "Yes, somewhat", "Yes, mostly","Yes, definitely"))+
   geom_hline(aes(yintercept = 0, linetype = "test"), colour = "black", size = 0.75, show.legend = F)+
-  labs(title = "Experimental Group", x =  NULL, y= 'n')+
+  labs(title = "Intervention Group", x =  NULL, y= 'n')+
   theme_gray(base_size = 10)+
   theme(plot.title = element_text(hjust = 0.5))+
   scale_x_discrete(labels = label_wrap(30)) +
@@ -327,3 +340,21 @@ plot2 <- ggplot(graphDataExperimental, aes(x = Q,y=Freq)) +
                      labels = (c(seq(20, 0, by = -5), seq(5,50,by=5))))
 #experimental
 plot2
+
+graphData <- rbind(graphDataControl, graphDataExperimental)
+plot3 <- ggplot(graphData, aes(x = Q,y=Freq)) +
+  geom_col(data = subset(graphData, Score == 3), 
+           aes(y = Freq, fill = Arm), position = position_dodge()) +
+  geom_text(aes(label = Freq), hjust = 0, color = '#555555') +
+  geom_col(data = subset(graphData, Score != 3), 
+           aes(y = -Freq, fill = factor(Score))) +
+  coord_flip() + scale_fill_brewer(palette="Greys", name="Response", breaks=c(0,1,2,3), labels=c("No", "Yes, somewhat", "Yes, mostly","Yes, definitely"))+
+  geom_hline(aes(yintercept = 0, linetype = "test"), colour = "black", size = 0.75, show.legend = F)+
+  labs(title = "Intervention Group", x =  NULL, y= 'n')+
+  theme_gray(base_size = 10)+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_discrete(labels = label_wrap(30)) +
+  scale_y_continuous(breaks = seq(-20,50, by = 5),
+                     labels = (c(seq(20, 0, by = -5), seq(5,50,by=5))))
+#ALL
+plot3
